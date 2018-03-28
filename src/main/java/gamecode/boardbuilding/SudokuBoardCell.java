@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class SudokuBoardCell {
-    private int cellValue;
-    private final List<Integer> possibleValues = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+    private Integer cellValue;
+    private List<Integer> possibleValues = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-    SudokuBoardCell() {
+    public SudokuBoardCell() {
         this.cellValue = 0;
     }
 
@@ -22,6 +22,10 @@ public final class SudokuBoardCell {
 
     public List<Integer> getPossibleValues() {
         return possibleValues;
+    }
+
+    public void setPossibleValues(List<Integer> possibleValues) {
+        this.possibleValues = possibleValues;
     }
 
     @Override

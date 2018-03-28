@@ -23,8 +23,9 @@ public final class CellsFiller {
     }
 
     private int setNumberOfCellsToFillByUser(UserMoveReader userMoveReader) {
-        System.out.println("Enter new value (0 - 25)");
-        return userMoveReader.readNumberOfBounds(0, 25);
+        System.out.println("Enter number of cells would you like to fill ups" +
+                " (0 - 35)");
+        return userMoveReader.readNumberOfBounds(0, 35);
     }
 
     private void fillUpOneCell(UserMoveReader userMoveReader, CellEntryValidator cellEntryValidator, SudokuBoard sudokuBoard) {
