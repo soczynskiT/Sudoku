@@ -1,6 +1,10 @@
 package gamecode.boardbuilding;
 
+import exceptions.InvalidCellEntryException;
 import gamecode.SudokuMenu;
+import gamecode.boardbuilding.boardelements.CellEntry;
+
+import java.util.List;
 
 public final class CellEntryValidator {
     private static CellEntryValidator cellEntryValidatorInstance = null;
@@ -8,65 +12,58 @@ public final class CellEntryValidator {
     private CellEntryValidator() {
     }
 
-    public boolean validateEntry(CellEntry cellEntry, SudokuBoard sudokuBoard) {
-        if (sudokuBoard.getSudokuBoard()[cellEntry.getRowNo()][cellEntry.getColumnNo()].getCellValue() == 0) {
-            final int cellCheck = validateCell(cellEntry, sudokuBoard);
-            final int rowCheck = validateRow(sudokuBoard, cellEntry);
-            final int colCheck = validateColumn(sudokuBoard, cellEntry);
-            final int blockCheck = validateBlock(sudokuBoard, cellEntry);
-            final int result = cellCheck + rowCheck + colCheck + blockCheck;
-            return result == 0;
-        } else {
-            return false;
+    boolean validateEntry(final CellEntry cellEntry, final SudokuBoard sudokuBoard) {
+        boolean isEntryCorrect = true;
+        try {
+            validateCell(cellEntry, sudokuBoard);
+            validateRow(cellEntry, sudokuBoard);
+            validateColumn(cellEntry, sudokuBoard);
+            validateBlock(cellEntry, sudokuBoard);
+        } catch (InvalidCellEntryException e) {
+            isEntryCorrect = false;
+        }
+        return isEntryCorrect;
+    }
+
+    private void validateCell(final CellEntry cellEntry, final SudokuBoard sudokuBoard) throws InvalidCellEntryException {
+        if (sudokuBoard.getSudokuBoard()[cellEntry.getRowNo()][cellEntry.getColumnNo()].getCellValue() != 0) {
+            throw new InvalidCellEntryException("Cell occupied");
         }
     }
 
-    private int validateCell(CellEntry cellEntry, SudokuBoard sudokuBoard) {
-        if (sudokuBoard.getSudokuBoard()[cellEntry.getRowNo()][cellEntry.getColumnNo()].getCellValue() == 0) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    private int validateRow(SudokuBoard sudokuBoard, CellEntry cellEntry) {
-        int validatedValueCorrect = 0;
-        for (int col = 0; col < 9; col++) {
+    private void validateRow(final CellEntry cellEntry, final SudokuBoard sudokuBoard) throws InvalidCellEntryException {
+        for (int col = 0; col < sudokuBoard.getBoardSideSize(); col++) {
             if (col != cellEntry.getColumnNo()) {
                 if (sudokuBoard.getSudokuBoard()[cellEntry.getRowNo()][col].getCellValue() == cellEntry.getValue()) {
-                    validatedValueCorrect = 1;
+                    throw new InvalidCellEntryException("Row occupied");
                 }
             }
         }
-        return validatedValueCorrect;
     }
 
-    private int validateColumn(SudokuBoard sudokuBoard, CellEntry cellEntry) {
-        int validatedValueCorrect = 0;
-        for (int row = 0; row < 9; row++) {
+    private void validateColumn(final CellEntry cellEntry, final SudokuBoard sudokuBoard) throws InvalidCellEntryException {
+        for (int row = 0; row < sudokuBoard.getBoardSideSize(); row++) {
             if (row != cellEntry.getRowNo()) {
                 if (sudokuBoard.getSudokuBoard()[row][cellEntry.getColumnNo()].getCellValue() == cellEntry.getValue()) {
-                    validatedValueCorrect = 1;
+                    throw new InvalidCellEntryException("Column occupied");
                 }
             }
         }
-        return validatedValueCorrect;
     }
 
-    private int validateBlock(SudokuBoard sudokuBoard, CellEntry cellEntry) {
-        int validatedValueCorrect = 0;
-        final int firstRowToCheck = cellEntry.getBlockNo().getRowsIndicators().get(0);
-        final int firstColToCheck = cellEntry.getBlockNo().getColumnsIndicators().get(0);
-        for (int r = firstRowToCheck; r < firstRowToCheck + 3; r++) {
-            for (int c = firstColToCheck; c < firstColToCheck + 3; c++) {
-                if (r != cellEntry.getRowNo() && c != cellEntry.getColumnNo()) {
-                    if (sudokuBoard.getSudokuBoard()[r][c].getCellValue() == cellEntry.getValue()) {
-                        validatedValueCorrect = 1;
+    private void validateBlock(final CellEntry cellEntry, final SudokuBoard sudokuBoard) throws InvalidCellEntryException {
+        final List<Integer> rowsToCheck = cellEntry.getBlockNo().getRowsIndicators();
+        final List<Integer> colsToCheck = cellEntry.getBlockNo().getColsIndicators();
+
+        for (int row = rowsToCheck.get(0); row < rowsToCheck.get(rowsToCheck.size() - 1) + 1; row++) {
+            for (int col = colsToCheck.get(0); col < colsToCheck.get(colsToCheck.size() - 1) + 1; col++) {
+                if (row != cellEntry.getRowNo() && col != cellEntry.getColumnNo()) {
+                    if (sudokuBoard.getSudokuBoard()[row][col].getCellValue() == cellEntry.getValue()) {
+                        throw new InvalidCellEntryException("Block occupied");
                     }
                 }
             }
         }
-        return validatedValueCorrect;
     }
 
     public static CellEntryValidator getInstance() {

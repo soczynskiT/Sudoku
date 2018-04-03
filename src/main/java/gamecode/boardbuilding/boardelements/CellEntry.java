@@ -1,27 +1,26 @@
-package gamecode.boardbuilding;
+package gamecode.boardbuilding.boardelements;
 
-import enums.BoardBlocks;
+import gamecode.boardbuilding.SudokuBoard;
 
-import java.util.*;
 import java.util.stream.Collectors;
 
 public final class CellEntry {
     private final int rowNo;
     private final int columnNo;
     private final int value;
-    private final BoardBlocks blockNo;
+    private final BoardBlock boardBlock;
 
-    public CellEntry(final int rowNo, final int columnNo, final int value) {
+    public CellEntry(final int rowNo, final int columnNo, final int value, final SudokuBoard sudokuBoard) {
         this.rowNo = rowNo;
         this.columnNo = columnNo;
         this.value = value;
-        this.blockNo = checkBlockNo();
+        this.boardBlock = checkBlock(sudokuBoard);
     }
 
-    private BoardBlocks checkBlockNo() {
-        return Arrays.stream(BoardBlocks.values())
+    private BoardBlock checkBlock(final SudokuBoard sudokuBoard) {
+        return sudokuBoard.getBoardBlocksList().stream()
                 .filter(r -> r.getRowsIndicators().contains(rowNo))
-                .filter(c -> c.getColumnsIndicators().contains(columnNo))
+                .filter(c -> c.getColsIndicators().contains(columnNo))
                 .collect(Collectors.toList()).get(0);
     }
 
@@ -37,7 +36,7 @@ public final class CellEntry {
         return value;
     }
 
-    public BoardBlocks getBlockNo() {
-        return blockNo;
+    public BoardBlock getBlockNo() {
+        return boardBlock;
     }
 }

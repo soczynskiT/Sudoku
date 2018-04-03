@@ -2,12 +2,12 @@ package gamecode.databases;
 
 import gamecode.SudokuMenu;
 import gamecode.boardbuilding.SudokuBoard;
+import gamecode.databases.databasedisplay.DatabaseDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class BoardsDatabase {
+public final class BoardsDatabase {
     private final List<SudokuBoard> boardStepLog;
     private final List<SudokuBoard> solvedBoards;
     private final List<SudokuBoard> deadEndBoards;
@@ -20,37 +20,41 @@ public class BoardsDatabase {
 
     }
 
-    public void saveBoardState(SudokuBoard sudokuBoard) {
+    public void saveBoardState(final SudokuBoard sudokuBoard) {
         try {
             SudokuBoard logBoard = sudokuBoard.deepCopy();
             boardStepLog.add(logBoard);
         } catch (CloneNotSupportedException e) {
-            System.out.println(e);
+            System.out.println("Clone not supported !");
         }
     }
 
-    public void saveSolvedBoard(SudokuBoard sudokuBoard) {
+    public void saveSolvedBoard(final SudokuBoard sudokuBoard) {
         try {
             SudokuBoard solvedBoardLog = sudokuBoard.deepCopy();
             solvedBoards.add(solvedBoardLog);
         } catch (CloneNotSupportedException e) {
-            System.out.println(e);
+            System.out.println("Clone not supported !");
         }
     }
 
-    public void saveDeadEndBoard(SudokuBoard sudokuBoard) {
+    public void saveDeadEndBoard(final SudokuBoard sudokuBoard) {
         try {
             SudokuBoard deadEndBoardLog = sudokuBoard.deepCopy();
             deadEndBoards.add(deadEndBoardLog);
         } catch (CloneNotSupportedException e) {
-            System.out.println(e);
+            System.out.println("Clone not supported !");
         }
     }
 
-    public void showRandomSolution() {
-        Random random = new Random();
-        final int solutionNo = random.nextInt(solvedBoards.size());
-        solvedBoards.get(solutionNo).displayBoard();
+    public void clearDatabases() {
+        boardStepLog.clear();
+        deadEndBoards.clear();
+        solvedBoards.clear();
+    }
+
+    public void databaseRecordsDisplay(DatabaseDisplay databaseDisplay) {
+        databaseDisplay.showRecord(boardsDatabaseInstance);
     }
 
     public List<SudokuBoard> getBoardStepLog() {

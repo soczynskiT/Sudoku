@@ -1,4 +1,4 @@
-import gamecode.boardbuilding.CellEntry;
+import gamecode.boardbuilding.boardelements.CellEntry;
 import org.junit.Test;
 
 public class SudokuTestSuite {

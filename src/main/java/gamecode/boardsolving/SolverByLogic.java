@@ -1,11 +1,11 @@
 package gamecode.boardsolving;
 
-import enums.BoardBlocks;
 import gamecode.SudokuMenu;
+import gamecode.boardbuilding.boardelements.BoardBlock;
 import gamecode.boardbuilding.SudokuBoard;
-import gamecode.boardbuilding.SudokuBoardCell;
+import gamecode.boardbuilding.boardelements.SudokuBoardCell;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class SolverByLogic {
@@ -14,14 +14,15 @@ public final class SolverByLogic {
     private SolverByLogic() {
     }
 
-    public boolean fulfillCellsWithOnePossibility(SudokuBoard sudokuBoard) {
+    public boolean fulfillCellsWithOnePossibility(final SudokuBoard sudokuBoard) {
         boolean isAnyCellChanged = false;
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                SudokuBoardCell underCheckCell = sudokuBoard.getSudokuBoard()[row][col];
+        for (int row = 0; row < sudokuBoard.getBoardSideSize(); row++) {
+            for (int col = 0; col < sudokuBoard.getBoardSideSize(); col++) {
+                sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
 
-                if (underCheckCell.getCellValue() == 0 && underCheckCell.getPossibleValues().size() == 1) {
-                    final int newValue = sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().get(0);
+                SudokuBoardCell underCheckCell = sudokuBoard.getSudokuBoard()[row][col];
+                if (underCheckCell.getCellValue() == 0 && underCheckCell.getPossibleValuesList().size() == 1) {
+                    final int newValue = sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().get(0);
                     underCheckCell.setCellValue(newValue);
                     reduceNoOfPossibleMovesInCells(sudokuBoard);
                     isAnyCellChanged = true;
@@ -31,73 +32,83 @@ public final class SolverByLogic {
         return isAnyCellChanged;
     }
 
-    public boolean reduceNoOfPossibleMovesInCells(SudokuBoard sudokuBoard) {
-        int changeIDentifier = 0;
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
+    public boolean reduceNoOfPossibleMovesInCells(final SudokuBoard sudokuBoard) {
+        int changeIdentifier = 0;
+        for (int row = 0; row < sudokuBoard.getBoardSideSize(); row++) {
+            for (int col = 0; col < sudokuBoard.getBoardSideSize(); col++) {
                 SudokuBoardCell underCheckCell = sudokuBoard.getSudokuBoard()[row][col];
+
                 if (underCheckCell.getCellValue() != 0) {
                     final Integer value = underCheckCell.getCellValue();
-                    final int logic1 = removeAllPossibleMovesFromFulfilledCells(row, col, sudokuBoard);
-                    final int logic2 = removeUnavailableMovesFromRow(row, value, sudokuBoard);
-                    final int logic3 = removeUnavailableMovesFromColumn(col, value, sudokuBoard);
-                    final int logic4 = removeUnavailableMovesFromBlock(row, col, value, sudokuBoard);
-                    changeIDentifier = logic1 + logic2 + logic3 + logic4;
+                    final int logic1Identifier = removeAllPossibleMovesFromFulfilledCells(row, col, sudokuBoard);
+                    final int logic2Identifier = removeUnavailableMovesFromRow(row, value, sudokuBoard);
+                    final int logic3Identifier = removeUnavailableMovesFromColumn(col, value, sudokuBoard);
+                    final int logic4Identifier = removeUnavailableMovesFromBlock(row, col, value, sudokuBoard);
+                    changeIdentifier = logic1Identifier + logic2Identifier + logic3Identifier + logic4Identifier;
                 }
             }
         }
-        return changeIDentifier != 0;
+        return changeIdentifier != 0;
     }
 
-    private int removeAllPossibleMovesFromFulfilledCells(int row, int col, SudokuBoard sudokuBoard) {
+    private int removeAllPossibleMovesFromFulfilledCells(final int row, final int col, final SudokuBoard sudokuBoard) {
         int changeIdentifier = 0;
-        if (sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().size() != 0) {
-            sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().clear();
+        sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
+
+        if (sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().size() != 0) {
+            sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().clear();
             changeIdentifier++;
         }
         return changeIdentifier;
     }
 
-    private int removeUnavailableMovesFromRow(int row, Integer value, SudokuBoard sudokuBoard) {
+    private int removeUnavailableMovesFromRow(final int row, final Integer value, final SudokuBoard sudokuBoard) {
         int changeIdentifier = 0;
-        for (int col = 0; col < 9; col++) {
-            if (sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().contains(value)) {
-                sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().remove(value);
+        for (int col = 0; col < sudokuBoard.getBoardSideSize(); col++) {
+            sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
+
+            if (sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().contains(value)) {
+                sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().remove(value);
                 changeIdentifier++;
             }
         }
         return changeIdentifier;
     }
 
-    private int removeUnavailableMovesFromColumn(int col, Integer value, SudokuBoard sudokuBoard) {
+    private int removeUnavailableMovesFromColumn(final int col, final Integer value, final SudokuBoard sudokuBoard) {
         int changeIdentifier = 0;
-        for (int row = 0; row < 9; row++) {
-            if (sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().contains(value)) {
-                sudokuBoard.getSudokuBoard()[row][col].getPossibleValues().remove(value);
+        for (int row = 0; row < sudokuBoard.getBoardSideSize(); row++) {
+            sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
+
+            if (sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().contains(value)) {
+                sudokuBoard.getSudokuBoard()[row][col].getPossibleValuesList().remove(value);
                 changeIdentifier++;
             }
         }
         return changeIdentifier;
     }
 
-    private BoardBlocks checkBlockNo(int row, int col) {
-        return Arrays.stream(BoardBlocks.values())
+    private BoardBlock checkBlockNo(final int row, final int col, final SudokuBoard sudokuBoard) {
+        return sudokuBoard.getBoardBlocksList().stream()
                 .filter(r -> r.getRowsIndicators().contains(row))
-                .filter(c -> c.getColumnsIndicators().contains(col))
+                .filter(c -> c.getColsIndicators().contains(col))
                 .collect(Collectors.toList()).get(0);
     }
 
-    private int removeUnavailableMovesFromBlock(int row, int col, Integer value, SudokuBoard sudokuBoard) {
-        final BoardBlocks block = checkBlockNo(row, col);
+    private int removeUnavailableMovesFromBlock(final int row, final int col, final Integer value,
+                                                final SudokuBoard sudokuBoard) {
+        final BoardBlock block = checkBlockNo(row, col, sudokuBoard);
         int changeIdentifier = 0;
 
-        final int firstRowToCheck = block.getRowsIndicators().get(0);
-        final int firstColToCheck = block.getColumnsIndicators().get(0);
+        final List<Integer> rowsToCheck = block.getRowsIndicators();
+        final List<Integer> colsToCheck = block.getColsIndicators();
 
-        for (int r = firstRowToCheck; r < firstRowToCheck + 3; r++) {
-            for (int c = firstColToCheck; c < firstColToCheck + 3; c++) {
-                if (sudokuBoard.getSudokuBoard()[r][c].getPossibleValues().contains(value)) {
-                    sudokuBoard.getSudokuBoard()[r][c].getPossibleValues().remove(value);
+        for (int r = rowsToCheck.get(0); r < rowsToCheck.get(rowsToCheck.size() - 1) + 1; r++) {
+            for (int c = colsToCheck.get(0); c < colsToCheck.get(colsToCheck.size() - 1) + 1; c++) {
+                sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
+
+                if (sudokuBoard.getSudokuBoard()[r][c].getPossibleValuesList().contains(value)) {
+                    sudokuBoard.getSudokuBoard()[r][c].getPossibleValuesList().remove(value);
                     changeIdentifier++;
                 }
             }

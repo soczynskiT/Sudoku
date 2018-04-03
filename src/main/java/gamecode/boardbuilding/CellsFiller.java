@@ -1,6 +1,7 @@
 package gamecode.boardbuilding;
 
 import gamecode.SudokuMenu;
+import gamecode.boardbuilding.boardelements.CellEntry;
 import usermoveslogic.UserMoveReader;
 
 public final class CellsFiller {
@@ -9,8 +10,9 @@ public final class CellsFiller {
     private CellsFiller() {
     }
 
-    public void fillUpCells(UserMoveReader userMoveReader, CellEntryValidator cellEntryValidator, SudokuBoard sudokuBoard) {
-        final int cellsToFillByUser = setNumberOfCellsToFillByUser(userMoveReader);
+    public void fillUpCells(final UserMoveReader userMoveReader, final CellEntryValidator cellEntryValidator,
+                            final SudokuBoard sudokuBoard) {
+        final int cellsToFillByUser = setNumberOfCellsToFillByUser(userMoveReader, sudokuBoard);
         if (cellsToFillByUser != 0) {
             System.out.println("Enter cell address and new value:");
             int currentCell = 1;
@@ -22,23 +24,27 @@ public final class CellsFiller {
         }
     }
 
-    private int setNumberOfCellsToFillByUser(UserMoveReader userMoveReader) {
+    private int setNumberOfCellsToFillByUser(final UserMoveReader userMoveReader, final SudokuBoard sudokuBoard) {
+        final Double minimumCellsToFillUp = (sudokuBoard.getBoardSideSize() * sudokuBoard.getBoardSideSize()) * 0.2;
+        final int minBound = minimumCellsToFillUp.intValue();
+        final int maxBound = minBound * 4;
         System.out.println("Enter number of cells would you like to fill ups" +
-                " (0 - 35)");
-        return userMoveReader.readNumberOfBounds(0, 35);
+                " (" + minBound + " - " + maxBound + ")");
+        return userMoveReader.readNumberOfBounds(minBound, maxBound);
     }
 
-    private void fillUpOneCell(UserMoveReader userMoveReader, CellEntryValidator cellEntryValidator, SudokuBoard sudokuBoard) {
+    private void fillUpOneCell(final UserMoveReader userMoveReader, final CellEntryValidator cellEntryValidator,
+                               final SudokuBoard sudokuBoard) {
         boolean incorrectEntry;
         do {
             System.out.println("ROW: ");
-            final int row = userMoveReader.readNumberOfBounds(1, 9) - 1;
+            final int row = userMoveReader.readNumberOfBounds(1, sudokuBoard.getBoardSideSize()) - 1;
             System.out.print("COLUMN: ");
-            final int column = userMoveReader.readNumberOfBounds(1, 9) - 1;
+            final int column = userMoveReader.readNumberOfBounds(1, sudokuBoard.getBoardSideSize()) - 1;
             System.out.print("VALUE: ");
-            final int value = userMoveReader.readNumberOfBounds(1, 9);
+            final int value = userMoveReader.readNumberOfBounds(1, sudokuBoard.getBoardSideSize());
 
-            final CellEntry cellEntry = new CellEntry(row, column, value);
+            final CellEntry cellEntry = new CellEntry(row, column, value, sudokuBoard);
             final boolean entryCorrect = cellEntryValidator.validateEntry(cellEntry, sudokuBoard);
 
             if (entryCorrect) {
