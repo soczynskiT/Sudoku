@@ -12,7 +12,7 @@ public final class CellEntryValidator {
     private CellEntryValidator() {
     }
 
-    boolean validateEntry(final CellEntry cellEntry, final SudokuBoard sudokuBoard) {
+    public boolean validateEntry(final CellEntry cellEntry, final SudokuBoard sudokuBoard) {
         boolean isEntryCorrect = true;
         try {
             validateCell(cellEntry, sudokuBoard);

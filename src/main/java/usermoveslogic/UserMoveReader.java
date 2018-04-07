@@ -3,7 +3,7 @@ package usermoveslogic;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public final class UserMoveReader implements MoveReader {
+public class UserMoveReader implements MoveReader {
     private final Scanner scanner;
 
     public UserMoveReader() {

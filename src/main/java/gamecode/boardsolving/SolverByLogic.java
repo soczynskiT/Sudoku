@@ -37,6 +37,7 @@ public final class SolverByLogic {
         for (int row = 0; row < sudokuBoard.getBoardSideSize(); row++) {
             for (int col = 0; col < sudokuBoard.getBoardSideSize(); col++) {
                 SudokuBoardCell underCheckCell = sudokuBoard.getSudokuBoard()[row][col];
+                sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
 
                 if (underCheckCell.getCellValue() != 0) {
                     final Integer value = underCheckCell.getCellValue();

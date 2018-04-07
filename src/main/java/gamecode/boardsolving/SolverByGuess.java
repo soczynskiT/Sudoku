@@ -23,6 +23,7 @@ public final class SolverByGuess {
             final SudokuBoardCell underCheckCell = getFirstCellWithPossibleMoves(sudokuBoard);
             if (underCheckCell.getPossibleValuesList().size() > 0) {
                 final Integer value = underCheckCell.getPossibleValuesList().get(0);
+                sudokuBoard.setAlgorithmMovesID(sudokuBoard.getAlgorithmMovesID() + 1);
 
                 underCheckCell.getPossibleValuesList().remove(value);
                 boardsDatabase.saveBoardState(sudokuBoard);

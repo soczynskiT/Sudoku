@@ -80,7 +80,7 @@ public final class SudokuLogic {
         }
     }
 
-    private boolean checkIfGameIsSolved() {
+   private boolean checkIfGameIsSolved() {
         boolean isGameSolved = true;
         for (int row = 0; row < sudokuBoard.getBoardSideSize(); row++) {
             for (int col = 0; col < sudokuBoard.getBoardSideSize(); col++) {
